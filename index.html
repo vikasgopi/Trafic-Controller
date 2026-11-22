@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive EDL capstone project demonstrating a two-road traffic-light controller using a finite-state machine and Mod-N counter.">
+  <meta name="theme-color" content="#101827">
+  <title>Traffic Light Controller | EDL Capstone</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Traffic Logic home">
+      <span class="brand-mark">TL</span>
+      <span><strong>TRAFFIC LOGIC</strong><small>EDL CAPSTONE PROJECT</small></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#simulator">Simulator</a>
+      <a href="#design">Design</a>
+      <a href="#truth-table">State table</a>
+      <a href="#about">About</a>
+    </nav>
+    <span class="status-pill"><i></i> SYSTEM READY</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">ELECTRONICS & DIGITAL LOGIC</p>
+        <h1>Traffic-light controller<br><em>with Mod-N counter</em></h1>
+        <p class="hero-text">An interactive digital-logic demonstration of a two-road junction, controlled by a finite-state machine and a configurable Mod-N counter.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#simulator">Launch simulator <span>↗</span></a>
+          <a class="button secondary" href="#design">Explore the design</a>
+        </div>
+        <div class="hero-meta">
+          <span><b>04</b> FSM states</span><span><b>10</b> Modulus (default)</span><span><b>02</b> road directions</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Illustration of a traffic light">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="hero-chip">SEQUENTIAL<br>LOGIC</div>
+        <div class="signal-illustration">
+          <div class="signal-head"><span class="lamp red"></span><span class="lamp yellow"></span><span class="lamp green"></span></div>
+          <div class="signal-pole"></div><div class="signal-base"></div>
+        </div>
+        <div class="floating-tag tag-a">FSM <b>4 STATES</b></div>
+        <div class="floating-tag tag-b">COUNTER <b>MOD-N</b></div>
+      </div>
+    </section>
+
+    <section class="section simulator-section" id="simulator">
+      <div class="section-heading">
+        <div><p class="eyebrow">LIVE DEMONSTRATION</p><h2>Controller simulator</h2></div>
+        <p>Start the clock and watch the counter advance the signal sequence.</p>
+      </div>
+      <div class="sim-grid">
+        <div class="panel junction-panel">
+          <div class="panel-top"><div><span class="panel-kicker">JUNCTION VIEW</span><h3>Two-road intersection</h3></div><span class="live-indicator"><i></i> LIVE VIEW</span></div>
+          <div class="junction">
+            <div class="road road-horizontal"><div class="lane-mark"></div></div>
+            <div class="road road-vertical"><div class="lane-mark"></div></div>
+            <div class="crosswalk crosswalk-left"></div><div class="crosswalk crosswalk-right"></div>
+            <div class="crosswalk crosswalk-top"></div><div class="crosswalk crosswalk-bottom"></div>
+            <div class="direction-label main-label">MAIN ROAD</div><div class="direction-label side-label">SIDE ROAD</div>
+            <div class="mini-signal main-signal"><b>MR</b><span class="mini-lamp" id="mr-r"></span><span class="mini-lamp" id="mr-y"></span><span class="mini-lamp" id="mr-g"></span></div>
+            <div class="mini-signal side-signal"><b>SR</b><span class="mini-lamp" id="sr-r"></span><span class="mini-lamp" id="sr-y"></span><span class="mini-lamp" id="sr-g"></span></div>
+            <div class="junction-center">✦</div>
+          </div>
+          <div class="signal-legend"><span><i class="dot red-dot"></i> Stop</span><span><i class="dot yellow-dot"></i> Caution</span><span><i class="dot green-dot"></i> Go</span></div>
+        </div>
+
+        <div class="panel control-panel">
+          <div class="panel-top"><div><span class="panel-kicker">CONTROL UNIT</span><h3>Simulation controls</h3></div><span class="chip">FSM ACTIVE</span></div>
+          <div class="current-state">
+            <span class="muted-label">CURRENT STATE</span>
+            <div class="state-line"><strong id="state-name">S0</strong><span id="state-description">Main Road Green</span></div>
+            <div class="progress-track"><span id="state-progress"></span></div>
+            <div class="progress-caption"><span id="progress-count">0 / 10 counts</span><span id="duration-label">Mod-10</span></div>
+          </div>
+          <div class="counter-display">
+            <div><span class="muted-label">MOD-N COUNTER</span><strong id="counter-value">00</strong></div>
+            <div class="counter-binary"><span class="muted-label">BINARY</span><strong id="binary-value">0000</strong></div>
+          </div>
+          <div class="control-row">
+            <label for="modulus">Counter modulus <b id="modulus-value">10</b></label>
+            <input id="modulus" type="range" min="2" max="20" value="10">
+            <div class="range-labels"><span>2</span><span>20</span></div>
+          </div>
+          <div class="control-row">
+            <label for="speed">Clock speed <b id="speed-value">1.0×</b></label>
+            <input id="speed" type="range" min="1" max="5" value="1">
+            <div class="range-labels"><span>Slow</span><span>Fast</span></div>
+          </div>
+          <div class="button-row">
+            <button class="button primary" id="start-btn">▶ Start</button>
+            <button class="button secondary" id="step-btn">Step pulse</button>
+            <button class="button ghost" id="reset-btn">↺ Reset</button>
+          </div>
+          <p class="control-note" id="run-status" aria-live="polite">Paused · Press Start or Step pulse.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="design">
+      <div class="section-heading">
+        <div><p class="eyebrow">HOW IT WORKS</p><h2>Inside the controller</h2></div>
+        <p>The counter creates a timing event. The FSM uses that event to move to the next traffic state.</p>
+      </div>
+      <div class="architecture">
+        <div class="architecture-block"><span class="block-icon">◷</span><b>Clock source</b><small>Periodic clock pulses</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="architecture-block"><span class="block-icon">⌁</span><b>Clock divider</b><small>Slower timing tick</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="architecture-block active-block"><span class="block-icon">▦</span><b>Mod-N counter</b><small>Counts 0 to N−1</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="architecture-block"><span class="block-icon">◇</span><b>FSM</b><small>Four traffic states</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="architecture-block"><span class="block-icon">🚦</span><b>Output lamps</b><small>Red · Yellow · Green</small></div>
+      </div>
+      <div class="info-grid">
+        <article class="info-card">
+          <span class="card-number">01 / COUNTER</span><h3>Mod-N counter</h3>
+          <p>A Mod-N counter cycles through N distinct values. For Mod-10, the count sequence is 0, 1, 2 … 9, then returns to 0.</p>
+          <div class="formula">Number of flip-flops = ⌈log₂ N⌉</div>
+          <p class="small-note">For N = 10, four flip-flops are required because 2⁴ = 16.</p>
+        </article>
+        <article class="info-card">
+          <span class="card-number">02 / STATE MACHINE</span><h3>Finite-state machine</h3>
+          <p>The FSM stores the current traffic state and selects the next state whenever the counter produces a terminal-count event.</p>
+          <div class="state-flow"><span>S0</span><i>→</i><span>S1</span><i>→</i><span>S2</span><i>→</i><span>S3</span><i>↻</i></div>
+          <p class="small-note">The sequence repeats continuously until reset.</p>
+        </article>
+        <article class="info-card">
+          <span class="card-number">03 / SAFETY RULE</span><h3>Non-conflicting greens</h3>
+          <p>The output decoder ensures that the main road and side road are never green at the same time.</p>
+          <div class="safety-check"><span>MR Green</span><b>≠</b><span>SR Green</span><strong>✓</strong></div>
+          <p class="small-note">This is an educational logic model, not a certified traffic-control system.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section table-section" id="truth-table">
+      <div class="section-heading">
+        <div><p class="eyebrow">FSM REFERENCE</p><h2>State & output table</h2></div>
+        <p>1 = lamp ON · 0 = lamp OFF</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>State</th><th>Main R</th><th>Main Y</th><th>Main G</th><th>Side R</th><th>Side Y</th><th>Side G</th><th>Next state</th></tr></thead>
+          <tbody>
+            <tr data-state="S0"><th>S0</th><td>0</td><td>0</td><td class="on-green">1</td><td class="on-red">1</td><td>0</td><td>0</td><td>S1</td></tr>
+            <tr data-state="S1"><th>S1</th><td>0</td><td class="on-yellow">1</td><td>0</td><td class="on-red">1</td><td>0</td><td>0</td><td>S2</td></tr>
+            <tr data-state="S2"><th>S2</th><td class="on-red">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="on-green">1</td><td>S3</td></tr>
+            <tr data-state="S3"><th>S3</th><td class="on-red">1</td><td>0</td><td>0</td><td>0</td><td class="on-yellow">1</td><td>0</td><td>S0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-banner"><b>Design note</b><span>This four-state version is simplified for an EDL demonstration. A six-state extension can add an all-red clearance interval between the two directions.</span></div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="about-card">
+        <div><p class="eyebrow">CAPSTONE PROJECT</p><h2>Designed to make<br>digital logic visible.</h2></div>
+        <div class="about-copy"><p>This project demonstrates sequential circuit concepts through a familiar real-world example. It brings together a clock, counter, finite-state machine and output decoder in one interactive learning model.</p><p class="disclaimer">For academic demonstration only. Do not connect this prototype to real traffic infrastructure.</p></div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><span>TRAFFIC LOGIC <b>·</b> EDL CAPSTONE</span><span>Built for learning digital systems</span><a href="#top">Back to top ↑</a></footer>
+  <script src="script.js"></script>
+</body>
+</html>
